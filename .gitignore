@@ -1,0 +1,17 @@
+*.os
+*.o
+*.exe
+*.out
+*.d
+
+*.data
+*.html
+*.js
+*.wasm
+
+*.zip
+*.cache
+
+vgcore.*
+
+imgui.ini
