@@ -2,15 +2,6 @@
 
 #include "indexes.h"
 
-skColor ITEM_COLORS[] = {
-	COLOR_EMPTY,
-	COLOR_WHITE,
-	skColor(200,0,0),
-	skColor(0,200,0),
-	skColor(0,0,200)
-};
-#define MAX_COLOR 5
-
 class Item : public Node {
 public:
 	int colors[12] = {0};

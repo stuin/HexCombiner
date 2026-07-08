@@ -51,8 +51,8 @@ private:
 	Vector2f lastSent;
 
 public:
-	Player(Indexer *_collisionMap) : PlayerBase(PLAYER, 1), collisionMap(_collisionMap), input("/movement", PLAYER), joystick(TEXTURE_JOYSTICK, "/movement/joystick", TOUCHSCREENINPUT) {
-
+	Player(Indexer *_collisionMap) : PlayerBase(PLAYER, 1), collisionMap(_collisionMap), input("/movement", 0), joystick(TEXTURE_JOYSTICK, "/movement/joystick", TOUCHSCREENINPUT) {
+		input.printKeys();
 	}
 
 	void update(double time) {
