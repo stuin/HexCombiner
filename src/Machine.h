@@ -1,4 +1,4 @@
-#include "Skyrmion/tiling/NodeIndexer.hpp"
+#include "Skyrmion/tiling/MathIndexers.hpp"
 #include "Skyrmion/util/AnimatedNode.hpp"
 #include "Skyrmion/util/VertexGraph.hpp"
 
@@ -6,6 +6,7 @@
 
 NodeIndexer *machineLinkIndexes = NULL;
 GridMaker *machineTypeIndexes = NULL;
+Indexer *colorIndexes = NULL;
 bool saveMachines = false;
 
 #define MACHINE_DIRECTIONS_FOREACH(E) \

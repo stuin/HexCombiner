@@ -1,4 +1,3 @@
-#include "Skyrmion/tiling/MathIndexers.hpp"
 #include "Skyrmion/tiling/TileMap.hpp"
 #include "Skyrmion/debug/GridEditor.hpp"
 
@@ -24,10 +23,15 @@ void setMachine(int c, Vector2f pos) {
 			belt->setGridPosition(pos.x, pos.y, dir);
 		} else if(type == MACHINE_MINE) {
 			int colors[12] = {0};
-			colors[0] = 1;
-			Mine *mine = new Mine(colors, 5);
-			UpdateList::addNode(mine);
-			mine->setGridPosition(pos.x, pos.y, dir);
+			colors[0] = colorIndexes->getTile(pos)+1;
+			if((int)pos.y%2==0)
+				colors[0] = colorIndexes->getTile(pos+Vector2f(1,0))+1;
+
+			if(ITEM_COLORS[colors[0]] != COLOR_EMPTY) {
+				Mine *mine = new Mine(colors, 5);
+				UpdateList::addNode(mine);
+				mine->setGridPosition(pos.x, pos.y, dir);
+			}
 		} else if(type == MACHINE_ROTATOR) {
 			Rotator *rotate = new Rotator();
 			UpdateList::addNode(rotate);
@@ -36,15 +40,15 @@ void setMachine(int c, Vector2f pos) {
 	}
 }
 
-void initializeMachines() {
+void initializeMachines(Indexer *colorMap) {
 	machineTypeIndexes = new GridMaker("res/machine_grid.txt");
+	colorIndexes = colorMap;
 
 	GridMaker *machineLinkGrid = new GridMaker(machineTypeIndexes->getSize().x, machineTypeIndexes->getSize().y, 0);
 	machineLinkIndexes = new NodeIndexer(machineLinkGrid, MACHINENODES);
 	//std::cout << machineIndexes->getSize() << machineIndexes->getScale() << "\n";
 
 	machineTypeIndexes->mapGrid([](int c, Vector2f pos) { setMachine(c, pos); });
-
 	machineTypeIndexes->save("res/machine_grid.txt");
 
 	std::function<int(int)> machineFilter = [](int c) {
