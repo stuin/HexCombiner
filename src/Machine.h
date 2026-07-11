@@ -1,12 +1,14 @@
 #include "Skyrmion/tiling/MathIndexers.hpp"
 #include "Skyrmion/util/AnimatedNode.hpp"
 #include "Skyrmion/util/VertexGraph.hpp"
+#include "Skyrmion/util/ListFile.hpp"
 
 #include "item.h"
 
 NodeIndexer *machineLinkIndexes = NULL;
 GridMaker *machineTypeIndexes = NULL;
 Indexer *colorIndexes = NULL;
+ListFile *scoreIndexes = NULL;
 bool saveMachines = false;
 
 #define MACHINE_DIRECTIONS_FOREACH(E) \
@@ -19,18 +21,9 @@ bool saveMachines = false;
 
 NAMED_ENUM(MACHINE_DIRECTIONS);
 
-enum MACHINE_TYPE {
-	MACHINE_EMPTY,
-	MACHINE_BELT,
-	MACHINE_MINE,
-	MACHINE_ROTATOR
-};
-#define MAX_MACHINE 6
-
 class Machine : public Node, public Vertex<6> {
 	Vector2i gridPosition;
 
-	int arrivedItems = 0;
 	int lastInput = 0;
 	int indexUpdate = 0;
 
@@ -40,11 +33,23 @@ public:
 	int rotation = 0;
 	int maxItems = 1;
 	int currentItems = 0;
-	float travelSpeed = 0.5;
+	int arrivedItems = 0;
+	float beltSpeed = 0.75;
 
 	Machine() : Node(MACHINENODES, RENDER_COLOR_SINGLE), Vertex(NULL) {
 		setColor(COLOR_PURPLE);
 		//setHidden();
+	}
+
+	~Machine() {
+		for(int d = 0; d < 6; d++)
+			if(content[d] != NULL)
+				content[d]->setDelete();
+
+		if(machineLinkIndexes->getNode(gridPosition) == this) {
+			machineLinkIndexes->setNode(gridPosition, NULL);
+			machineTypeIndexes->setTile(gridPosition, ' ');
+		}
 	}
 
 	void setGridPosition(int x, int y, int _rotation) {
@@ -58,7 +63,7 @@ public:
 
 		machineTypeIndexes->setTile(gridPosition, ' ' + getType() + rotation*MAX_MACHINE);
 		if(saveMachines)
-			machineTypeIndexes->save("res/machine_grid.txt");
+			machineTypeIndexes->save("save/machine_grid.txt");
 	}
 
 	void update(double time) {
@@ -68,7 +73,7 @@ public:
 			//Process inputs
 			if(content[d] != NULL && canAttach(d, false)) {
 				if(content[d]->getPosition() != getPosition()) {
-					content[d]->travelProgress += travelSpeed * time;
+					content[d]->travelProgress += beltSpeed * time;
 					content[d]->setPosition(lerp(content[d]->from, getPosition(), content[d]->travelProgress));
 				}
 				if(content[d]->getPosition() == getPosition() && content[d]->travelProgress >= 1) {
@@ -77,18 +82,12 @@ public:
 				}
 			}
 
-			//if(hasEdge(d) && ((Node*)getVertex(d))->isDeleted()) {
-			//	std::cout << "Removed connection " << ((Machine*)getVertex(d));
-			//	getVertex(d)->setVertex(reverseDir(d), NULL);
-			//	setVertex(d, NULL);
-			//}
-
 			//Attach to output
 			if(!hasEdge(d) && canAttach(d, true) && machineLinkIndexes != NULL) {
 				Machine *other = (Machine*)machineLinkIndexes->getNode(dirPos(d));
 				if(other != NULL && !other->isDeleted() && other->canAttach(reverseDir(d), false)) {
 					setVertex(d, reverseDir(d), other);
-					std::cout << "Connected machine " << getId() << " to " << other << " with " << d << "\n";
+					//std::cout << "Connected machine " << getId() << " to " << other << " with " << d << "\n";
 				}
 			}
 
@@ -100,7 +99,7 @@ public:
 			}
 		}
 
-		if(arrivedItems == maxItems)
+		if(arrivedItems == maxItems || arrivedItems > 0)
 			process(time);
 	}
 
@@ -116,6 +115,9 @@ public:
 		item->from = item->getPosition();
 		item->travelProgress = 0;
 		currentItems--;
+		if(currentItems < 0)
+			currentItems = 0;
+		onOutput(dir);
 		return item;
 	}
 
@@ -124,9 +126,20 @@ public:
 			content[to] = content[from];
 			content[from] = NULL;
 			arrivedItems--;
+			if(arrivedItems < 0)
+				arrivedItems = 0;
 			return content[to];
 		}
 		return NULL;
+	}
+
+	void deleteItem(int d) {
+		if(content[d] != NULL) {
+			content[d]->setDelete();
+			content[d] = NULL;
+			currentItems--;
+			arrivedItems--;
+		}
 	}
 
 	bool canInput(int dir) {
@@ -139,9 +152,10 @@ public:
 
 	virtual int getType() { return MACHINE_EMPTY; }
 	virtual void process(double time) {}
+	virtual void onOutput(int dir) {}
 	virtual bool canAttach(int dir, bool output) { return false; }
 
-	int reverseDir(int dir) {
+	int reverseDir(int dir) override {
 		return (dir + 3) % 6;
 	}
 

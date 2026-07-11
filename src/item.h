@@ -5,14 +5,17 @@
 class Item : public Node {
 public:
 	int colors[12] = {0};
+	float alpha = 1;
 
 	Vector2i from;
 	float travelProgress = 0;
 
-	Item() : Node(ITEMS, RENDER_COLOR_TEXTURE_ARRAY, Vector2i(32,32)) {
+	Item(int layer, float _alpha) : Node(layer, RENDER_COLOR_TEXTURE_ARRAY, Vector2i(32,32)) {
 		setTexture(TEXTURE_TRIANGLES);
 		getRenderComponent()->getTextureRects()->reserve(12);
 		getRenderComponent()->getColors()->reserve(12);
+
+		alpha = _alpha;
 
 		for(int i = 0; i < 6; i++) {
 			setTextureVecRect(32*(i+1), 0, i);
@@ -29,8 +32,11 @@ public:
 	}
 
 	void updateRects() {
-		for(int i = 0; i < 12; i++)
-			getRenderComponent()->setColor(ITEM_COLORS[colors[i]], i);
+		for(int i = 0; i < 12; i++) {
+			skColor color = ITEM_COLORS[colors[i]];
+			color.alpha *= alpha;
+			getRenderComponent()->setColor(color, i);
+		}
 	}
 
 	bool rotate(int count) {
@@ -40,15 +46,12 @@ public:
 		if(count <= 0)
 			return false;
 
-		int c1 = colors[0];
-		int c2 = colors[6];
+		int colors2[12] = {0};
 		for(int i = 0; i < 6; i++) {
-			colors[i] = colors[(6-count+i)%6];
-			colors[i+6] = colors[(6-count+i)%6+6];
+			colors2[(i+count)%6] = colors[i];
+			colors2[(i+count)%6+6] = colors[i+6];
 		}
-		colors[6-count] = c1;
-		colors[12-count] = c2;
-		updateRects();
+		setColors(colors2);
 		return true;
 	}
 
@@ -62,8 +65,16 @@ public:
 			if(colors[i] == 0)
 				colors[i] = other->colors[i];
 		}
-		other->setHidden();
+		other->setDelete();
 		updateRects();
+		return true;
+	}
+
+	bool compare(Item *other) {
+		for(int i = 0; i < 12; i++) {
+			if(colors[i] != other->colors[i])
+				return false;
+		}
 		return true;
 	}
 };

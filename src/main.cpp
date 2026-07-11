@@ -9,28 +9,36 @@
 
 void initialize() {
 	//Load settings file
-	Settings::loadSettings("res/settings.json");
+	//Settings::loadSettings("res/settings.json");
 
 	Vector2i worldSize = Settings::getVector("/worldSize", Vector2i(100,100));
+	int seed = Settings::getInt("/seed", 1000);
 
-	if(!IO::hasFile("res/ground_colors.txt")) {
+	//Generate new base colors
+	IO::createFolder("save");
+	if(!IO::hasFile("save/color_grid.txt")) {
 		noise::module::Perlin testNoise;
+		testNoise.SetSeed(seed);
 		NoiseGrid initGrid(&testNoise, worldSize, 6);
-		initGrid.save("res/ground_colors.txt", '0');
-		//IO::deleteFile("res/machine_grid.txt");
+		initGrid.save("save/color_grid.txt", '0');
+		IO::deleteFile("save/machine_grid.txt");
 	}
 
-	//Load base tile maps
-	GridMaker grid("res/ground_colors.txt");
+	//Load base tile map
+	GridMaker grid("save/color_grid.txt");
 	Indexer *groundIndexer = new LinearIndexer(&grid, 1, 0-'1', 0);
+	Indexer *collisionMap1 = new MapIndexer(groundIndexer, collisionIndex, 1, 48, 43);
+	Indexer *collisionMap = new HexIndexer(collisionMap1, 1);
+	//collisionMap1->printGrid();
 
-	int seed = 1000;
 	groundIndexer->mapGrid([worldSize, groundIndexer, seed](int c, Vector2f pos) {
 		int x = pos.x;
 		int y = pos.y;
-		double input = RandomIndexer::IntegerNoise(x + y*worldSize.x + seed*worldSize.y*worldSize.x);
-		if(c == 4 && input > 0.9)
-			groundIndexer->setTileI(x, y, '0'+6);
+		if(c == 4) {
+			double input = RandomIndexer::IntegerNoise(x + y*worldSize.x + seed*worldSize.y*worldSize.x);
+			if(input > 0.9)
+				groundIndexer->setTileI(x, y, '0'+6);
+		}
 	});
 
 	TileMap ground(TEXTURE_GROUND_TILES, 48, 57, groundIndexer, GROUND, 0, true);
@@ -39,10 +47,11 @@ void initialize() {
 
 	//Finish engine setup
 	UpdateList::globalLayer(PLAYER);
+	UpdateList::globalLayer(EDITOR);
 	UpdateList::globalLayer(TOUCHSCREENINPUT);
 
 	initializeMachines(groundIndexer);
-	initializePlayer(groundIndexer);
+	initializePlayer(collisionMap);
 }
 
 WindowConfig windowConfig() {

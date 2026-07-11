@@ -7,9 +7,12 @@
     E(GROUND) \
     E(BELTS) \
     E(MACHINENODES) \
+    E(HOLEITEMS) \
     E(ITEMS) \
     E(MACHINETOPS) \
+    E(SCORES) \
     E(PLAYER) \
+    E(PLAYERSCORE) \
     E(EDITOR) \
 	E(TOUCHSCREENINPUT) \
 
@@ -24,6 +27,7 @@ NAMED_ENUM(LAYER);
 	F(TEXTURE_MACHINE_TILES, "res/hexfactories.png") \
 	F(TEXTURE_TRIANGLES, "res/triangles.png") \
 	F(TEXTURE_JOYSTICK, "res/debug/touchscreen_joystick.png") \
+	F(TEXTURE_FONT, "res/small_pixel.ttf") \
 
 FILE_ENUM(TEXTURE);
 
@@ -38,6 +42,42 @@ static const skColor ITEM_COLORS[] = {
 	COLOR_EMPTY
 };
 #define MAX_COLOR 5
+
+enum MACHINE_TYPE {
+	MACHINE_EMPTY,
+	MACHINE_BELT,
+	MACHINE_MINE,
+	MACHINE_ROTATEL,
+	MACHINE_ROTATER,
+	MACHINE_MERGE,
+	MACHINE_DISTRIBUTE,
+	MACHINE_CROSSOVER,
+	MACHINE_HOLE
+};
+#define MAX_MACHINE 12
+
+static const std::map<int, std::string> machineNames = {
+	{' '+MACHINE_EMPTY, "Empty"},
+	{' '+MACHINE_BELT, "Belt"},
+	{' '+MACHINE_MINE, "Mine"},
+	{' '+MACHINE_ROTATEL, "Rotate Left"},
+	{' '+MACHINE_ROTATER, "Rotate Right"},
+	{' '+MACHINE_MERGE, "Merge"},
+	{' '+MACHINE_DISTRIBUTE, "Distribute"},
+	{' '+MACHINE_CROSSOVER, "Crossover"},
+};
+
+static const std::map<int, int> collisionIndex = {
+	{-1, 0},
+	{0, 0},
+	{1, 0},
+	{2, 0},
+	{3, 0},
+	{4, 0},
+	{5, 1},
+	{6, 1},
+	{7, 1}
+};
 
 void initializePlayer(Indexer *collisionMap);
 void initializeMachines(Indexer *colorMap);
