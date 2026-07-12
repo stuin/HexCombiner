@@ -1,0 +1,16 @@
+Mine
+Produces a triangle item every 4 seconds, based on the color it is\nplaced on and the direction it is facing.
+Belt
+Moves items at 0.75/s, can accept from all directions but only\noutputs in one. Can be placed over void gaps.
+Rotator
+Rotates an item 60 degrees in 1 second. Can only transfer items\nstraight through.
+Merger
+Merges items together in 1 second. Can take 2-5 inputs, waits for all\nconnected inputs. Any conflicts will break it.
+Distributor
+Splits items round robin between any number of outputs. Accepts\ninputs at belt speed.
+Crossover
+Transfers items straight across at belt speed.
+Hole
+Randomly placed across the map. Gives points for items that match\nthe indicated colors+rotation. Can accept from all sides.
+Controls
+WASD to move, Left Click to place, Shift+Scroll or R/F to rotate,\nScroll, Q/E, or Middle Click to select a machine, +/- to zoom.

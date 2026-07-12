@@ -57,7 +57,7 @@ public:
 		rotation = _rotation;
 
 		machineLinkIndexes->setNode(gridPosition, this);
-		setPosition(gridPosition * Vector2i(48, 43) + Vector2i(48, 14));
+		setPosition(gridPosition * Vector2i(48, 43) + Vector2i(0, 14));
 		if(y%2==0)
 			setPosition(getPosition()+Vector2f(24, 0));
 

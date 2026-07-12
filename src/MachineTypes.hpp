@@ -1,9 +1,15 @@
 #include "Machine.h"
 
 class Belt : public Machine {
+	bool crossStyle = false;
+
 public:
+	Belt(bool _crossStyle) {
+		crossStyle = _crossStyle;
+	}
+
 	int getType() {
-		return MACHINE_BELT;
+		return crossStyle ? MACHINE_XBELT : MACHINE_BELT;
 	}
 
 	void process(double time) override {
@@ -92,7 +98,7 @@ class Mine : public Machine {
 public:
 	int color;
 	float delay = 0;
-	float maxDelay = 5;
+	float maxDelay = 4;
 
 	Mine(int _color) {
 		color = _color;
@@ -183,7 +189,8 @@ public:
 							first = prepareOutput(d, rotation);
 							delay = maxDelay;
 						} else {
-							first->merge(content[d]);
+							if(!first->merge(content[d]))
+								setDelete();
 							deleteItem(d);
 						}
 					}
@@ -211,9 +218,9 @@ public:
 		UpdateList::addNode(&display);
 
 		scoreText.setString("");
-		scoreText.setTexture(TEXTURE_FONT);
-		if(scoreIndexes->getInt(display.getId()) > 0)
-			scoreIndexes->linkNode(display.getId(), &scoreText);
+		scoreText.setTexture(FONT_POINTS);
+		if(scoreIndexes->getInt(display.getId()+1) > 0)
+			scoreIndexes->linkNode(display.getId()+1, &scoreText);
 		UpdateList::addNode(&scoreText);
 
 		maxItems = 1;
@@ -228,8 +235,8 @@ public:
 			if(content[d] != NULL) {
 				if(display.compare(content[d])) {
 					scoreIndexes->increment(0, false);
-					scoreIndexes->increment(display.getId());
-					scoreIndexes->linkNode(display.getId(), &scoreText);
+					scoreIndexes->increment(display.getId()+1);
+					scoreIndexes->linkNode(display.getId()+1, &scoreText);
 					scoreIndexes->linkNode(0, UpdateList::getNode(PLAYERSCORE));
 					//std::cout << "Scored at " << display.getId() << "\n";
 				} else if(false) {

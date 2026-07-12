@@ -1,5 +1,6 @@
 #include "Skyrmion/core/UpdateList.h"
 #include "Skyrmion/input/Settings.h"
+#include "Skyrmion/util/ListFile.hpp"
 
 #include "Skyrmion/tiling/TileMap.hpp"
 #include "Skyrmion/tiling/NoiseIndexer.hpp"
@@ -12,16 +13,29 @@ void initialize() {
 	//Settings::loadSettings("res/settings.json");
 
 	Vector2i worldSize = Settings::getVector("/worldSize", Vector2i(100,100));
-	int seed = Settings::getInt("/seed", 1000);
+	int seed = 0;
 
 	//Generate new base colors
 	IO::createFolder("save");
 	if(!IO::hasFile("save/color_grid.txt")) {
+		int seed = Settings::getInt("/seed", 0);
+		if(seed == 0)
+			seed = time(NULL);
+
 		noise::module::Perlin testNoise;
 		testNoise.SetSeed(seed);
 		NoiseGrid initGrid(&testNoise, worldSize, 6);
 		initGrid.save("save/color_grid.txt", '0');
 		IO::deleteFile("save/machine_grid.txt");
+		IO::deleteFile("save/score_list.txt");
+		ListFile list("save/score_list.txt", "0");
+		list.setInt(1, seed, true);
+		seed = list.getInt(1);
+		//std::cout << seed << "\n";
+	} else {
+		ListFile list("save/score_list.txt", "0");
+		seed = list.getInt(1);
+		//std::cout << seed << "\n";
 	}
 
 	//Load base tile map
@@ -60,7 +74,7 @@ WindowConfig windowConfig() {
 
 	return {
 		"Hex Combiner",
-		Settings::getVector("/screen", Vector2i(1080, 1080)),
+		Settings::getVector("/screenSize", Vector2i(1080, 1080)),
 		skColor(0,0,0),
 		TEXTURE_FILES,
 		LAYER_NAMES

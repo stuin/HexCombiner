@@ -6,6 +6,24 @@
 		"right": "D",
 		"joystick": 1
 	},
+	"placement": {
+		"place": "MOUSELEFT",
+		"select": "MOUSEMIDDLE",
+		"clear": "MOUSERIGHT",
+		"next": "SCROLLDOWN-SHIFT",
+		"next&1": "E",
+		"previous": "SCROLLUP-SHIFT",
+		"previous&1": "Q",
+		"rotateL": "SCROLLUP+SHIFT",
+		"rotateL&1": "F",
+		"rotateR": "SCROLLDOWN+SHIFT",
+		"rotateR&1": "R"
+	},
+	"zoom": {
+		"in": "PLUS",
+		"out": "MINUS"
+	},
 	"worldSize": [30, 30],
-	"screenSize": [1080, 1080]
+	"screenSize": [720, 720],
+	"seed": 0
 }

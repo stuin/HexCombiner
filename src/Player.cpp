@@ -5,6 +5,11 @@
 #include "Skyrmion/util/AnimatedNode.hpp"
 
 #include "indexes.h"
+#include "InfoPage.hpp"
+
+std::vector<std::string> zoomKeys = {
+	"/zoom/in", "/zoom/out"
+};
 
 class PlayerBase : public Node {
 private:
@@ -46,13 +51,15 @@ private:
 	Indexer *collisionMap;
 
 	DirectionHandler input;
+	InputHandler zoomInput;
 	TouchscreenJoystick joystick;
 
 	Vector2f lastSent;
 
 public:
-	Player(Indexer *_collisionMap) : PlayerBase(PLAYER, 1), collisionMap(_collisionMap), input("/movement", 0), joystick(TEXTURE_JOYSTICK, "/movement/joystick", TOUCHSCREENINPUT) {
-		input.printKeys();
+	Player(Indexer *_collisionMap) : PlayerBase(PLAYER, 1), collisionMap(_collisionMap), input("/movement", 0),
+	 zoomInput(zoomKeys, 0), joystick(TEXTURE_JOYSTICK, "/movement/joystick", TOUCHSCREENINPUT) {
+		//input.printKeys();
 	}
 
 	void update(double time) {
@@ -61,6 +68,17 @@ public:
 		//setPosition(getPosition()+movement);
 
 		//updateAnimation(time, movement);
+
+		zoomInput.pressedFunc = [](int i) {
+			Vector2i screenSize = UpdateList::getCameraRect().size();
+			if(i == 0 && screenSize.x > 540)
+				screenSize -= Vector2i(20,20);
+			else if(i == 1)
+				screenSize += Vector2i(20,20);
+			UpdateList::setCamera(UpdateList::getNode(PLAYER), screenSize);
+			UpdateList::getNode(PLAYERSCORE)->setPosition(screenSize/-2 + Vector2i(20,20));
+			UpdateList::getNode(INFOBUTTON)->setPosition(screenSize.x/2-20, screenSize.y/-2+20);
+		};
 	}
 
 	void recieveEvent(Event event) {
@@ -69,18 +87,21 @@ public:
 };
 
 void initializePlayer(Indexer *collisionMap) {
-	Vector2i screenSize = Settings::getVector("/screen", Vector2i(1080, 1080));
+	//Vector2i screenSize = Settings::getVector("/screenSize", Vector2i(1080, 1080));
+	Vector2i screenSize = Vector2i(540,540);
 
 	//Player
 	Player player(collisionMap);
 	player.setPosition(collisionMap->getSize() * collisionMap->getScale() / 2);
 	UpdateList::addNode(&player);
-	UpdateList::setCamera(&player, screenSize/2);
+	UpdateList::setCamera(&player, screenSize);
 
 	Node *scoreText = UpdateList::getNode(PLAYERSCORE);
 	scoreText->setParent(&player);
 	scoreText->setOrigin(0,0);
-	scoreText->setPosition(screenSize/-4 + Vector2i(20,20));
+	scoreText->setPosition(screenSize/-2 + Vector2i(20,20));
+
+	InfoPage infoPage(screenSize, &player);
 
 	std::cout << "Added player\n";
 
