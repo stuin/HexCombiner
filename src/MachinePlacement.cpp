@@ -89,7 +89,7 @@ int beltFilter(int c) {
 #include "MachineSelector.hpp"
 
 void initializeMachines(Indexer *colorMap) {
-	Vector2i worldSize = Settings::getVector("/worldSize", Vector2i(100,100));
+	Vector2i worldSize = Settings::getVector("/world/worldSize", Vector2i(100,100));
 	colorIndexes = colorMap;
 
 	//Read scores from file

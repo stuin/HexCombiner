@@ -13,4 +13,4 @@ Transfers items straight across at belt speed.
 Hole
 Randomly placed across the map. Gives points for items that match\nthe indicated colors+rotation. Can accept from all sides.
 Controls
-WASD to move, Left Click to place, Shift+Scroll or R/F to rotate,\nScroll, Q/E, or Middle Click to select a machine, +/- to zoom.
+WASD to move, Left Click to place, Shift+Scroll/num, or R/F to rotate,\nScroll, Q/E, num, or Middle Click to select a machine, +/- to zoom.

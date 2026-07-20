@@ -42,11 +42,11 @@
 		"out": "MINUS"
 	},
 	"world": {
-		"worldSize": [90, 90],
-		"frequency": 3,
+		"worldSize": [30, 30],
+		"frequency": 1,
 		"holeChance": 90,
 		"seed": 0
 	},
-	"screenSize": [1080, 1080],
-	"playerSpeed": 110
+	"screenSize": [720, 720],
+	"playerSpeed": 100
 }

@@ -55,15 +55,18 @@ private:
 	TouchscreenJoystick joystick;
 
 	Vector2f lastSent;
+	int speed = 1;
 
 public:
 	Player(Indexer *_collisionMap) : PlayerBase(PLAYER, 1), collisionMap(_collisionMap), input("/movement", 0),
 	 zoomInput(zoomKeys, 0), joystick(TEXTURE_JOYSTICK, "/movement/joystick", TOUCHSCREENINPUT) {
 		//input.printKeys();
+
+		speed = Settings::getInt("/playerSpeed", 100);
 	}
 
 	void update(double time) {
-		Vector2f movement = input.getMovement(time * 100);
+		Vector2f movement = input.getMovement(time * speed);
 		setPosition(topDownMovement(this, movement, collisionMap));
 		//setPosition(getPosition()+movement);
 

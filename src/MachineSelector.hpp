@@ -7,7 +7,13 @@
 std::vector<std::string> placeKeys = {
 	"/placement/place", "/placement/select", "/placement/clear",
 	"/placement/next", "/placement/previous",
-	"/placement/rotateL", "/placement/rotateR"
+	"/placement/rotateL", "/placement/rotateR",
+	"/placement/numbers/rotate1", "/placement/numbers/rotate2", "/placement/numbers/rotate3",
+	"/placement/numbers/rotate4", "/placement/numbers/rotate5", "/placement/numbers/rotate6",
+	"/placement/numbers/select1", "/placement/numbers/select2", "/placement/numbers/select3",
+	"/placement/numbers/select4", "/placement/numbers/select5", "/placement/numbers/select6",
+	"/placement/numbers/select7", "/placement/numbers/select8", "/placement/numbers/select9",
+	"/placement/numbers/select0"
 };
 
 class MachineSelector : public Node {
@@ -59,7 +65,7 @@ public:
 		MachineSelector *selector = this;
 		input.pressedFunc = [selector](int i) { selector->pressedKey(i); };
 		input.heldFunc = [selector](int i) { selector->heldKey(i); };
-		//input.printKeys();
+		input.printKeys();
 	}
 
 	void setCurrent(int _current, int _offset) {
@@ -114,6 +120,12 @@ public:
 		} else if(i == 6) {
 			int o = (offset + 1 + offsetMax) % offsetMax;
 			setCurrent(current, o);
+		} else if(i >= 7 && i < 13) {
+			int o = i-7;
+			setCurrent(current, o);
+		} else if(i >= 13 && i < 23) {
+			int c = (i-12) % SELECTABLE_MACHINES;
+			setCurrent(c, offset);
 		}
 	}
 
