@@ -45,7 +45,8 @@
 		"worldSize": [90, 90],
 		"frequency": 3,
 		"holeChance": 90,
-		"seed": 0
+		"seed": 0,
+		"loadSave": false
 	},
 	"screenSize": [1080, 1080],
 	"playerSpeed": 110

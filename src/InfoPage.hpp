@@ -63,7 +63,7 @@ public:
 			UpdateList::addNode(titleText);
 
 			std::string s = machineDesc->getLine(i+1);
-			for(int x = 0; x < s.size()-1; x++)
+			for(sint x = 0; x < s.size()-1; x++)
 				if(s[x] == '\\' && s[x+1] == 'n') {
 					s[x] = ' ';
 					s[x+1] = '\n';

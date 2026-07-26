@@ -89,7 +89,7 @@ int beltFilter(int c) {
 #include "MachineSelector.hpp"
 
 void initializeMachines(Indexer *colorMap) {
-	Vector2i worldSize = Settings::getVector("/world/worldSize", Vector2i(100,100));
+	Vector2i worldSize = SETTINGS.getVector("/world/worldSize", Vector2i(100,100));
 	colorIndexes = colorMap;
 
 	//Read scores from file
@@ -119,13 +119,13 @@ void initializeMachines(Indexer *colorMap) {
 	//Render machines to grid
 	LinearIndexer *spaceIndexer = new LinearIndexer(machineTypeIndexes, 1, 0-' ', 0);
 	FuncIndexer *machineIndexer = new FuncIndexer(spaceIndexer, machineFilter, -1);
-	TileMap *machineMap = new TileMap(TEXTURE_MACHINE_TILES, 48, 57, machineIndexer, MACHINETOPS, 0, true);
+	TileMap *machineMap = new TileMap(TEXTURE_MACHINE_TILES, 48, 57, machineIndexer, MACHINETOPS, 0, 0, true);
 	machineMap->setPosition(-24, 0);
 	UpdateList::addNode(machineMap);
 
 	//Render belts to grid
 	FuncIndexer *beltIndexer = new FuncIndexer(spaceIndexer, beltFilter, -1);
-	TileMap *beltMap = new TileMap(TEXTURE_BELT_TILES, 48, 57, beltIndexer, BELTS, 0, true);
+	TileMap *beltMap = new TileMap(TEXTURE_BELT_TILES, 48, 57, beltIndexer, BELTS, 0, 0, true);
 	beltMap->setPosition(-24, 0);
 	UpdateList::addNode(beltMap);
 
@@ -135,7 +135,7 @@ void initializeMachines(Indexer *colorMap) {
 		int y = pos.y;
 		int emptyChance = 2;
 		if(c == 5) {
-			double input = RandomIndexer::IntegerNoise(x + y*worldSize.x + seed*worldSize.y*worldSize.x);
+			double input = stableNoise(x + y*worldSize.x + seed*worldSize.y*worldSize.x);
 			int permutation = pow(MAX_COLOR+emptyChance, 6) * input;
 			int colors[12] = {0};
 			for(int i = 0; i < 6; i++) {

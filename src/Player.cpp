@@ -62,7 +62,7 @@ public:
 	 zoomInput(zoomKeys, 0), joystick(TEXTURE_JOYSTICK, "/movement/joystick", TOUCHSCREENINPUT) {
 		//input.printKeys();
 
-		speed = Settings::getInt("/playerSpeed", 100);
+		speed = SETTINGS.getInt("/playerSpeed", 100);
 	}
 
 	void update(double time) {
@@ -90,7 +90,7 @@ public:
 };
 
 void initializePlayer(Indexer *collisionMap) {
-	//Vector2i screenSize = Settings::getVector("/screenSize", Vector2i(1080, 1080));
+	//Vector2i screenSize = SETTINGS.getVector("/screenSize", Vector2i(1080, 1080));
 	Vector2i screenSize = Vector2i(540,540);
 
 	//Player

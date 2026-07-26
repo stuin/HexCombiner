@@ -65,7 +65,7 @@ public:
 		MachineSelector *selector = this;
 		input.pressedFunc = [selector](int i) { selector->pressedKey(i); };
 		input.heldFunc = [selector](int i) { selector->heldKey(i); };
-		input.printKeys();
+		//input.printKeys();
 	}
 
 	void setCurrent(int _current, int _offset) {
